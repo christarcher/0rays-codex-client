@@ -32,7 +32,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # 3. 基础环境
 ADD https://github.com/krallin/tini/releases/download/v0.19.0/tini-amd64 /usr/bin/tini
 ADD https://github.com/tsl0922/ttyd/releases/download/1.7.7/ttyd.x86_64 /usr/bin/ttyd
-RUN chmod +x /usr/bin/ttyd /usr/bin/tini
+COPY scripts/cc-switch /usr/bin/cc-switch
+RUN chmod +x /usr/bin/ttyd /usr/bin/tini /usr/bin/cc-switch
 
 # 4. 包管理源配置
 RUN npm config set registry https://registry.npmmirror.com && \
@@ -50,8 +51,9 @@ RUN pip install --break-system-packages --no-cache-dir \
     beautifulsoup4
 
 # 7. 目录结构
-RUN mkdir -p /data/{workspace,codex,tools}
+RUN mkdir -p /data/{workspace,codex,tools,cc-switch}
 RUN ln -sfn /data/codex /root/.codex
+RUN ln -sfn /data/cc-switch/ /root/.cc-switch
 
 # 8. 手动构建完工具目录后复制进容器
 COPY tools/ /data/tools/
