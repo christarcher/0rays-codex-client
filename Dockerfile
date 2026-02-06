@@ -5,21 +5,10 @@ LABEL description="Codex-based code audit / CTF workstation"
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-RUN apt update && apt install curl -y --no-install-recommends
-
-RUN bash <(curl -sSL https://linuxmirrors.cn/main.sh) \
-  --source mirrors.ustc.edu.cn \
-  --protocol http \
-  --use-intranet-source false \
-  --install-epel true \
-  --backup true \
-  --upgrade-software true \
-  --clean-cache true \
-  --ignore-backup-tips
-
+RUN sed -i 's@//.*archive.ubuntu.com@//mirrors.ustc.edu.cn@g; s@//.*security.ubuntu.com@//mirrors.ustc.edu.cn@g' /etc/apt/sources.list.d/*
 RUN apt-get update && apt-get install -y --no-install-recommends \
     # 基础
-    ca-certificates wget git openssh-server tmux \
+    ca-certificates wget curl git openssh-server tmux \
     # 编辑器
     vim \
     # 搜索 & 文本
