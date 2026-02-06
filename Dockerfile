@@ -51,7 +51,7 @@ RUN pip install --break-system-packages --no-cache-dir \
     beautifulsoup4
 
 # 7. 目录结构
-RUN mkdir -p /data/{workspace,codex,tools,cc-switch}
+RUN mkdir -p /data/workspace /data/codex /data/tools /data/cc-switch
 RUN ln -sfn /data/codex /root/.codex
 RUN ln -sfn /data/cc-switch/ /root/.cc-switch
 
