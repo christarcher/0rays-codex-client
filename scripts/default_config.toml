@@ -1,0 +1,7 @@
+model_provider = "0rays-openai"
+
+[model_providers.0rays-openai]
+name = "0rays-openai"
+base_url = "https://placeholder.com/v1"
+env_key = "OPENAI_API_KEY"
+wire_api = "responses"

@@ -29,14 +29,16 @@ docker run -d \
 
 ## 环境变量
 
-环境中预装了tui版的cc-switch, 并且持久化到/data目录下, 也不一定需要使用环境变量传递APIKEY. 并且codex似乎不遵守OPENAI_BASE_URL. 所以最好使用cc-switch管理.
+环境中预装了tui版的cc-switch, 并且持久化到/data目录下, 也不一定需要使用环境变量传递APIKEY. 
+
+如果通过docker启动时的环境变量传递, 且同时设置了`OPENAI_API_KEY`和`OPENAI_BASE_URL`, 则会自动填充到codex的config.toml, 具体逻辑可以参考 `scripts/start.sh`
 
 | 变量 | 说明 |
 |---|---|
-| `OPENAI_API_KEY` | Codex 使用的 API Key |
-| `OPENAI_BASE_URL` | API 地址（可配置第三方中转） |
-| `PASSWORD` | SSH 和终端的 root 密码 |
-| `PROXY` | HTTP/HTTPS 代理地址（可选） |
+| `OPENAI_API_KEY` | Codex 使用的 APIKey |
+| `OPENAI_BASE_URL` | API 地址, 格式为https://placeholder.com/v1 |
+| `PASSWORD` | SSH 和终端的 root 密码 (默认为0raysnb) |
+| `PROXY` | HTTP/HTTPS 代理地址 (可选) |
 
 ## 目录结构
 

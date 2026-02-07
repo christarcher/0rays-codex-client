@@ -11,6 +11,14 @@ export OPENAI_API_KEY="${OPENAI_API_KEY}"
 export OPENAI_BASE_URL="${OPENAI_BASE_URL}"
 EOF
 
+# ---- 动态替换 codex config 中的 base_url ----
+CODEX_CFG="/data/codex/config.toml"
+if [ -n "${OPENAI_API_KEY}" ] && [ -f "$CODEX_CFG" ]; then
+    REAL_BASE_URL="${OPENAI_BASE_URL:-https://api.openai.com/v1}"
+    sed -i "s|https://placeholder.com/v1|${REAL_BASE_URL}|g" "$CODEX_CFG"
+    echo "[+] Updated base_url in $CODEX_CFG to ${REAL_BASE_URL}"
+fi
+
 # 代理（只在非空时写入）
 if [ -n "${PROXY}" ]; then
     cat >> "$ENV_FILE" << EOF
