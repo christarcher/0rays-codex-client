@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # ---- 1. 密码 ----
-echo "root:${PASSWORD:-0raysnb}" | chpasswd 2>/dev/null
+PASSWORD="${PASSWORD:-0raysnb}"
+echo "root:${PASSWORD}" | chpasswd 2>/dev/null
 
 # ---- 2. 把当前所有需要的环境变量写成静态 KV 文件 ----
 ENV_FILE="/etc/audit-env"
@@ -44,9 +45,21 @@ chmod 644 "$ENV_FILE"
 export LANG=zh_CN.UTF-8
 export LC_ALL=zh_CN.UTF-8
 
-mkdir -p /run/sshd
-/usr/sbin/sshd
-echo "[+] sshd started on :8982"
+/usr/sbin/nginx && echo "[+] nginx started on :8981"
+/usr/sbin/sshd && echo "[+] sshd started on :8982"
 
-echo "[+] ttyd starting on :8981"
-exec ttyd --writable --port 8981 -t 'unicodeVersion=11' /tmux.sh
+FB_DB="/data/.filebrowser.db"
+if [ ! -f "$FB_DB" ]; then
+    echo "[+] filebrowser: first run, initializing..."
+    filebrowser config init -d "$FB_DB"
+    filebrowser users add root "0raysnb-default" -d "$FB_DB" --perm.admin
+    filebrowser config set -d "$FB_DB" --baseURL /files --root /data/ --auth.method=noauth
+else
+    echo "[+] filebrowser: using existing database"
+fi
+
+filebrowser -d "$FB_DB" &
+echo "[+] filebrowser started on :8080/files/"
+
+echo "[+] ttyd started on :7681"
+exec ttyd --writable -c "root:${PASSWORD}" -t 'unicodeVersion=11' /tmux.sh

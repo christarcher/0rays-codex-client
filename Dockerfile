@@ -8,7 +8,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN sed -i 's@//.*archive.ubuntu.com@//mirrors.ustc.edu.cn@g; s@//.*security.ubuntu.com@//mirrors.ustc.edu.cn@g' /etc/apt/sources.list.d/*
 RUN apt-get update && apt-get install -y --no-install-recommends \
     # 基础
-    ca-certificates wget curl git openssh-server tmux locales xxd ttyd \
+    ca-certificates wget curl git openssh-server tmux locales xxd ttyd nginx \
     # 编辑器
     vim \
     # 搜索 & 文本
@@ -31,10 +31,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # 3. 基础环境
 ADD https://github.com/krallin/tini/releases/download/v0.19.0/tini-amd64 /usr/bin/tini
-COPY scripts/cc-switch /usr/bin/cc-switch
-RUN chmod +x /usr/bin/ttyd /usr/bin/tini /usr/bin/cc-switch
+ADD https://github.com/filebrowser/filebrowser/releases/latest/download/linux-amd64-filebrowser.tar.gz /tmp/fb.tar.gz
+ADD https://github.com/SaladDay/cc-switch-cli/releases/download/v4.7.0/cc-switch-cli-linux-x64-musl.tar.gz /tmp/ccs.tar.gz
+RUN tar -xzf /tmp/fb.tar.gz -C /usr/bin filebrowser && rm /tmp/fb.tar.gz
+RUN tar -xzf /tmp/ccs.tar.gz -C /usr/bin cc-switch && rm /tmp/ccs.tar.gz
+RUN chmod +x /usr/bin/ttyd /usr/bin/tini /usr/bin/cc-switch /usr/bin/filebrowser
 
 RUN locale-gen zh_CN.UTF-8 && update-locale LANG=zh_CN.UTF-8
+
+COPY scripts/nginx.conf /etc/nginx/nginx.conf
 
 # 4. 包管理源配置
 RUN npm config set registry https://registry.npmmirror.com && \
@@ -82,8 +87,10 @@ RUN sed -i '1i\# Auto-attach tmux\nif [[ $- == *i* ]] && [ -z "${TMUX}" ]; then\
 
 # 12. 清理
 RUN apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.bash_history && \
-    history -c 2>/dev/null; true
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && history -c 2>/dev/null; true
+
+# 13. 写入history便于使用
+RUN echo 'codex --dangerously-bypass-approvals-and-sandbox' > /root/.bash_history
 
 # 元数据
 EXPOSE 8981 8982

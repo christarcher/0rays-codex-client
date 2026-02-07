@@ -1,6 +1,6 @@
 # 0RAYS Codex Client
 
-基于 [Codex](https://github.com/openai/codex) 的代码审计 / CTF 工作站 Docker 镜像。
+基于 [Codex](https://github.com/openai/codex) 的代码审计 / CTF 工作站 Docker 镜像
 
 这是一个**基础镜像**，预装了通用安全工具和运行环境。各方向（Pwn / Crypto / Web 等）可以基于此镜像自行构建专属环境。
 
@@ -17,6 +17,8 @@ docker run -d \
   -v codex-data:/data \
   christarcher/0rays-codex-client:latest
 ```
+
+需要注意的是, 如果/data如果不挂载, 存储的配置会丢失.
 
 ## 访问方式
 
