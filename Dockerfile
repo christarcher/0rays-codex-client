@@ -8,7 +8,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN sed -i 's@//.*archive.ubuntu.com@//mirrors.ustc.edu.cn@g; s@//.*security.ubuntu.com@//mirrors.ustc.edu.cn@g' /etc/apt/sources.list.d/*
 RUN apt-get update && apt-get install -y --no-install-recommends \
     # 基础
-    ca-certificates wget curl git openssh-server tmux \
+    ca-certificates wget curl git openssh-server tmux locales xxd ttyd \
     # 编辑器
     vim \
     # 搜索 & 文本
@@ -31,9 +31,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # 3. 基础环境
 ADD https://github.com/krallin/tini/releases/download/v0.19.0/tini-amd64 /usr/bin/tini
-ADD https://github.com/tsl0922/ttyd/releases/download/1.7.7/ttyd.x86_64 /usr/bin/ttyd
 COPY scripts/cc-switch /usr/bin/cc-switch
 RUN chmod +x /usr/bin/ttyd /usr/bin/tini /usr/bin/cc-switch
+
+RUN locale-gen zh_CN.UTF-8 && update-locale LANG=zh_CN.UTF-8
 
 # 4. 包管理源配置
 RUN npm config set registry https://registry.npmmirror.com && \

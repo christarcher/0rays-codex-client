@@ -6,6 +6,8 @@ echo "root:${PASSWORD:-0raysnb}" | chpasswd 2>/dev/null
 # ---- 2. 把当前所有需要的环境变量写成静态 KV 文件 ----
 ENV_FILE="/etc/audit-env"
 cat > "$ENV_FILE" << EOF
+export LANG=zh_CN.UTF-8
+export LC_ALL=zh_CN.UTF-8
 export CODEX_HOME="/data/codex/"
 export OPENAI_API_KEY="${OPENAI_API_KEY}"
 export OPENAI_BASE_URL="${OPENAI_BASE_URL}"
@@ -39,9 +41,12 @@ chmod 644 "$ENV_FILE"
 [ -f /data/custom.sh ] && source /data/custom.sh
 
 # ---- 4. 启动服务 ----
+export LANG=zh_CN.UTF-8
+export LC_ALL=zh_CN.UTF-8
+
 mkdir -p /run/sshd
 /usr/sbin/sshd
 echo "[+] sshd started on :8982"
 
 echo "[+] ttyd starting on :8981"
-exec ttyd --writable --port 8981 /tmux.sh
+exec ttyd --writable --port 8981 -t 'unicodeVersion=11' /tmux.sh
