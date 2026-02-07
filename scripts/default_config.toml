@@ -1,4 +1,5 @@
 model_provider = "0rays-openai"
+model_reasoning_effort = "high"
 
 [model_providers.0rays-openai]
 name = "0rays-openai"
