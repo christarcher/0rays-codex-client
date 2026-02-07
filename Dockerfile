@@ -52,7 +52,7 @@ RUN pip install --break-system-packages --no-cache-dir \
 
 # 7. 目录结构
 RUN mkdir -p /data/workspace /data/codex /data/tools /data/cc-switch
-RUN ln -sfn /data/codex /root/.codex
+RUN ln -sfn /data/codex/ /root/.codex
 RUN ln -sfn /data/cc-switch/ /root/.cc-switch
 
 # 8. 手动构建完工具目录后复制进容器
@@ -70,7 +70,7 @@ RUN mkdir -p /run/sshd && \
 # 10. 脚本 & 配置文件
 COPY scripts/start.sh /start.sh
 COPY scripts/tmux.sh /tmux.sh
-COPY AGENT.md /data/AGENT.md
+COPY AGENT.md /data/codex/AGENTS.md
 RUN chmod +x /start.sh /tmux.sh
 
 # 11. .bashrc 注入

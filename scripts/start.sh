@@ -6,6 +6,7 @@ echo "root:${PASSWORD:-0raysnb}" | chpasswd 2>/dev/null
 # ---- 2. 把当前所有需要的环境变量写成静态 KV 文件 ----
 ENV_FILE="/etc/audit-env"
 cat > "$ENV_FILE" << EOF
+export CODEX_HOME="/data/codex/"
 export OPENAI_API_KEY="${OPENAI_API_KEY}"
 export OPENAI_BASE_URL="${OPENAI_BASE_URL}"
 EOF
