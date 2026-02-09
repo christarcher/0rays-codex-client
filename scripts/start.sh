@@ -10,16 +10,33 @@ cat > "$ENV_FILE" << EOF
 export LANG=zh_CN.UTF-8
 export LC_ALL=zh_CN.UTF-8
 export CODEX_HOME="/data/codex/"
-export OPENAI_API_KEY="${OPENAI_API_KEY}"
-export OPENAI_BASE_URL="${OPENAI_BASE_URL}"
 EOF
 
-# ---- 动态替换 codex config 中的 base_url ----
+# 如果启动时设置了OPENAI_API_KEY, 则写入env文件, bash启动时可以使用
+if [ -n "${OPENAI_API_KEY}" ]; then
+    echo "export OPENAI_API_KEY=\"${OPENAI_API_KEY}\"" >> "$ENV_FILE"
+fi
+
+# 如果设置了OPENAI_BASE_URL, 并且为首次启动, 则填充, 否则替换
 CODEX_CFG="/data/codex/config.toml"
-if [ -n "${OPENAI_API_KEY}" ] && [ -f "$CODEX_CFG" ]; then
-    REAL_BASE_URL="${OPENAI_BASE_URL:-https://api.openai.com/v1}"
-    sed -i "s|https://placeholder.com/v1|${REAL_BASE_URL}|g" "$CODEX_CFG"
-    echo "[+] Updated base_url in $CODEX_CFG to ${REAL_BASE_URL}"
+if [ -n "${OPENAI_BASE_URL}" ]; then
+    if [ ! -f "$CODEX_CFG" ]; then
+        cat > "$CODEX_CFG" << TOML
+model_provider = "docker-env"
+model = "gpt-5.2"
+model_reasoning_effort = "high"
+
+[model_providers.docker-env]
+name = "docker-env"
+base_url = "${OPENAI_BASE_URL}"
+env_key = "OPENAI_API_KEY"
+wire_api = "responses"
+TOML
+        echo "[+] Generated $CODEX_CFG"
+    else
+        sed -i "s|^base_url = .*|base_url = \"${OPENAI_BASE_URL}\"|" "$CODEX_CFG"
+        echo "[+] Updated base_url in $CODEX_CFG"
+    fi
 fi
 
 # 代理（只在非空时写入）
@@ -37,6 +54,10 @@ EOF
 fi
 
 chmod 644 "$ENV_FILE"
+
+# HTTP端认证
+echo "root:$(openssl passwd -6 "$PASSWORD")" > /etc/nginx/.htpasswd
+echo "[+] htpasswd file generated"
 
 # ---- 3. 用户自定义 ----
 [ -f /data/custom.sh ] && source /data/custom.sh

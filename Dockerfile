@@ -76,8 +76,7 @@ RUN mkdir -p /run/sshd && \
 # 10. 脚本 & 配置文件
 COPY scripts/start.sh /start.sh
 COPY scripts/tmux.sh /tmux.sh
-COPY scripts/default_config.toml /data/codex/config.toml
-COPY AGENT.md /data/codex/AGENTS.md
+COPY AGENTS.md /data/codex/AGENTS.md
 RUN chmod +x /start.sh /tmux.sh
 
 # 11. .bashrc 注入
